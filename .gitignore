@@ -9,6 +9,7 @@ venv/
 input/
 output*/
 output_*/
+*.zip
 preview_sheet/
 *_preview/
 *_output*/

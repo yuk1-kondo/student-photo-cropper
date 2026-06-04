@@ -112,3 +112,22 @@ output_ok/
 - 生徒写真を外部サービスへ送信しません。
 - `output_review/` は必ず人間が確認してください。
 - `input/` や `output_*` は `.gitignore` で除外しています。生徒写真をGitHubへ公開しないでください。
+
+## CSV順リネーム
+
+画像をファイル名順に並べ、CSVの指定列にある名前でコピーを作る補助スクリプトです。元画像は変更しません。
+
+```bash
+python3 scripts/rename_by_csv.py \
+  --input-dir /path/to/photos \
+  --csv seitono.csv \
+  --output-dir renamed_output
+```
+
+既定ではCSVの1列目を使います。別の列を使う場合:
+
+```bash
+python3 scripts/rename_by_csv.py --input-dir /path/to/photos --csv names.csv --column 2
+```
+
+出力フォルダには `rename_mapping.csv` も作成されます。
