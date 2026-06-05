@@ -58,19 +58,46 @@
             最大容量 KB
             <input id="maxKbInput" type="number" min="20" max="2000" value="100" />
           </label>
-          <label>
-            顔の大きさ
-            <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.42" />
-          </label>
-          <label>
-            頭上余白
-            <input id="headroomInput" type="number" min="0.2" max="1.0" step="0.01" value="0.55" />
-          </label>
-          <label>
-            検出信頼度
-            <input id="confidenceInput" type="number" min="0.3" max="0.99" step="0.01" value="0.85" />
-          </label>
         </div>
+        <p class="note">
+          通常はプリセットだけ選べば十分です。顔まわりの構図はPython版と同じ初期値で自動調整します。
+        </p>
+
+        <details class="advanced-settings">
+          <summary>詳細設定</summary>
+          <div class="advanced-copy">
+            <p>
+              基準値はPython版と同じです。迷った場合は変更せず、プレビューや出力結果を見て必要な時だけ調整してください。
+            </p>
+          </div>
+          <div class="control-grid">
+            <label>
+              顔の大きさ
+              <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.42" />
+              <span class="help-text">
+                既定値 0.42。数値を上げると顔が大きくなり、肩や胸元は少なめになります。
+                下げると顔が小さくなり、肩や上半身が多めに入ります。目安は 0.38〜0.46。
+              </span>
+            </label>
+            <label>
+              頭上余白
+              <input id="headroomInput" type="number" min="0.2" max="1.0" step="0.01" value="0.55" />
+              <span class="help-text">
+                既定値 0.55。数値を上げると頭上の余白が増え、顔は少し下に寄ります。
+                下げると頭上余白が減ります。髪が切れそうな時は 0.60〜0.65。
+              </span>
+            </label>
+            <label>
+              検出信頼度
+              <input id="confidenceInput" type="number" min="0.3" max="0.99" step="0.01" value="0.85" />
+              <span class="help-text">
+                既定値 0.85。数値を上げると確実な顔だけ採用し、要確認が増えます。
+                下げると検出しやすくなりますが、誤検出も増えます。通常は 0.80〜0.90。
+              </span>
+            </label>
+          </div>
+          <button id="resetAdvancedButton" class="secondary-button" type="button">Python版の初期値に戻す</button>
+        </details>
       </section>
 
       <section class="action-row">

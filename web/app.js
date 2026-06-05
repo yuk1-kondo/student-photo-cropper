@@ -7,6 +7,11 @@ const MODEL_URL =
   "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
+const PYTHON_DEFAULTS = {
+  faceRatio: 0.42,
+  headroom: 0.55,
+  confidence: 0.85,
+};
 
 const elements = {
   loadModelButton: document.querySelector("#loadModelButton"),
@@ -19,6 +24,7 @@ const elements = {
   faceRatioInput: document.querySelector("#faceRatioInput"),
   headroomInput: document.querySelector("#headroomInput"),
   confidenceInput: document.querySelector("#confidenceInput"),
+  resetAdvancedButton: document.querySelector("#resetAdvancedButton"),
   processButton: document.querySelector("#processButton"),
   clearButton: document.querySelector("#clearButton"),
   imageCount: document.querySelector("#imageCount"),
@@ -62,6 +68,13 @@ function setPreset(preset) {
     elements.maxKbInput.value = "100";
   }
   updateOutputSize();
+}
+
+function resetAdvancedSettings() {
+  elements.faceRatioInput.value = String(PYTHON_DEFAULTS.faceRatio);
+  elements.headroomInput.value = String(PYTHON_DEFAULTS.headroom);
+  elements.confidenceInput.value = String(PYTHON_DEFAULTS.confidence);
+  log("詳細設定をPython版の初期値に戻しました。");
 }
 
 function getImageFiles() {
@@ -390,6 +403,7 @@ elements.loadModelButton.addEventListener("click", loadModel);
 elements.imageInput.addEventListener("change", updateImageCount);
 elements.presetSelect.addEventListener("change", () => setPreset(elements.presetSelect.value));
 elements.dpiInput.addEventListener("input", updateOutputSize);
+elements.resetAdvancedButton.addEventListener("click", resetAdvancedSettings);
 elements.processButton.addEventListener("click", processImages);
 elements.clearButton.addEventListener("click", () => {
   elements.log.textContent = "";

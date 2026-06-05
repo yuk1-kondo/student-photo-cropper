@@ -158,6 +158,51 @@ button:disabled {
   line-height: 1.7;
 }
 
+.advanced-settings {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.advanced-settings summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.advanced-copy {
+  margin: 14px 0 16px;
+  padding: 12px 14px;
+  background: #eef5f7;
+  border: 1px solid #d2e4ea;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.help-text {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.secondary-button {
+  width: auto;
+  min-width: 220px;
+  margin-top: 16px;
+  border-color: var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+.secondary-button:hover {
+  border-color: var(--accent);
+  background: #eef5f7;
+}
+
 .action-row {
   display: grid;
   grid-template-columns: 1fr 180px;
