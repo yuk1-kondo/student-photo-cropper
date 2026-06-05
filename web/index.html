@@ -12,7 +12,7 @@
         <div>
           <h1>証明写真ローカル処理</h1>
           <p>
-            画像は端末内のブラウザで処理します。顔検出、3cm x 4cmトリミング、
+            画像は端末内のブラウザで処理します。顔検出、証明写真サイズへのトリミング、
             容量調整、CSV順リネーム、ZIP保存まで行えます。
           </p>
         </div>
@@ -35,8 +35,7 @@
           </label>
         </div>
         <p class="note">
-          CSVを指定した場合、画像ファイル名の昇順とCSVの行順を対応させます。
-          1列目の値が出力ファイル名になります。
+          CSVを選ぶと、CSVに書かれた名前で保存できます。
         </p>
       </section>
 
@@ -44,10 +43,31 @@
         <h2>出力設定</h2>
         <div class="control-grid">
           <label>
-            プリセット
-            <select id="presetSelect">
-              <option value="standard">3cm x 4cm / 300dpi / 100KB</option>
-              <option value="high">3cm x 4cm / 900dpi / 500KB</option>
+            写真サイズ
+            <select id="sizePresetSelect">
+              <option value="3x4">3 x 4 cm 証明写真</option>
+              <option value="35x45">3.5 x 4.5 cm パスポート系</option>
+              <option value="25x3">2.5 x 3 cm 小さめ</option>
+              <option value="4x5">4 x 5 cm 大きめ</option>
+              <option value="5x7">5 x 7 cm 大きめ</option>
+              <option value="4x3">4 x 3 cm 横向き</option>
+              <option value="custom">自分で指定</option>
+            </select>
+          </label>
+          <label>
+            幅 cm
+            <input id="widthCmInput" type="number" min="1" max="10" step="0.1" value="3" />
+          </label>
+          <label>
+            高さ cm
+            <input id="heightCmInput" type="number" min="1" max="10" step="0.1" value="4" />
+          </label>
+          <label>
+            画質
+            <select id="qualityPresetSelect">
+              <option value="standard">標準 300dpi / 100KB</option>
+              <option value="high">高画質 900dpi / 500KB</option>
+              <option value="custom">自分で指定</option>
             </select>
           </label>
           <label>
@@ -60,7 +80,7 @@
           </label>
         </div>
         <p class="note">
-          通常はプリセットだけ選べば十分です。顔まわりの構図は、Python版の出力に近づくようWeb版用に補正した推奨値で自動調整します。
+          通常は写真サイズと画質を選ぶだけで十分です。縦横を自分で指定した場合も、その比率に合わせて自動で切り抜きます。
         </p>
 
         <details class="advanced-settings">
@@ -74,18 +94,18 @@
           <div class="control-grid">
             <label>
               顔の大きさ
-              <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.38" />
+              <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.34" />
               <span class="help-text">
-                推奨値 0.38。数値を上げると顔が大きくなり、肩や胸元は少なめになります。
-                下げると顔が小さくなり、肩や上半身が多めに入ります。証明写真では 0.36〜0.42 が目安です。
+                推奨値 0.34。数値を上げると顔が大きくなり、肩や胸元は少なめになります。
+                下げると顔が小さくなり、肩や上半身が多めに入ります。証明写真では 0.32〜0.40 が目安です。
               </span>
             </label>
             <label>
               頭上余白
-              <input id="headroomInput" type="number" min="0.2" max="1.2" step="0.01" value="0.85" />
+              <input id="headroomInput" type="number" min="0.2" max="1.3" step="0.01" value="0.95" />
               <span class="help-text">
-                推奨値 0.85。数値を上げると頭上の余白が増え、顔は少し下に寄ります。
-                下げると頭上余白が減ります。まだ上が詰まる時は 0.90〜1.00、空きすぎる時は 0.75〜0.80。
+                推奨値 0.95。数値を上げると頭上の余白が増え、顔は少し下に寄ります。
+                下げると頭上余白が減ります。まだ上が詰まる時は 1.00〜1.10、空きすぎる時は 0.85〜0.90。
               </span>
             </label>
             <label>
@@ -118,6 +138,7 @@
         <pre id="log" class="log"></pre>
       </section>
     </main>
+    <footer class="site-footer">© 2026 ローカル写真一括編集 - Developed by YUKI KONDO</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script type="module" src="./app.js"></script>

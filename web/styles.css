@@ -258,6 +258,15 @@ button:disabled {
   white-space: pre-wrap;
 }
 
+.site-footer {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 0 0 32px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
 @media (max-width: 760px) {
   .hero,
   .control-grid,

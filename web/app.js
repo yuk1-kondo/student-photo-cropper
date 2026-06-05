@@ -8,9 +8,17 @@ const MODEL_URL =
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
 const WEB_RECOMMENDED_DEFAULTS = {
-  faceRatio: 0.38,
-  headroom: 0.85,
+  faceRatio: 0.34,
+  headroom: 0.95,
   confidence: 0.85,
+};
+const SIZE_PRESETS = {
+  "3x4": { width: 3, height: 4 },
+  "35x45": { width: 3.5, height: 4.5 },
+  "25x3": { width: 2.5, height: 3 },
+  "4x5": { width: 4, height: 5 },
+  "5x7": { width: 5, height: 7 },
+  "4x3": { width: 4, height: 3 },
 };
 
 const elements = {
@@ -18,7 +26,10 @@ const elements = {
   modelStatus: document.querySelector("#modelStatus"),
   imageInput: document.querySelector("#imageInput"),
   csvInput: document.querySelector("#csvInput"),
-  presetSelect: document.querySelector("#presetSelect"),
+  sizePresetSelect: document.querySelector("#sizePresetSelect"),
+  widthCmInput: document.querySelector("#widthCmInput"),
+  heightCmInput: document.querySelector("#heightCmInput"),
+  qualityPresetSelect: document.querySelector("#qualityPresetSelect"),
   dpiInput: document.querySelector("#dpiInput"),
   maxKbInput: document.querySelector("#maxKbInput"),
   faceRatioInput: document.querySelector("#faceRatioInput"),
@@ -47,9 +58,13 @@ function cmToPx(cm, dpi) {
 
 function outputDimensions() {
   const dpi = Number(elements.dpiInput.value);
+  const widthCm = Number(elements.widthCmInput.value);
+  const heightCm = Number(elements.heightCmInput.value);
   return {
-    width: cmToPx(3, dpi),
-    height: cmToPx(4, dpi),
+    width: cmToPx(widthCm, dpi),
+    height: cmToPx(heightCm, dpi),
+    widthCm,
+    heightCm,
     dpi,
   };
 }
@@ -59,15 +74,64 @@ function updateOutputSize() {
   elements.outputSize.textContent = `${size.width} x ${size.height}`;
 }
 
-function setPreset(preset) {
+function setQualityPreset(preset) {
   if (preset === "high") {
     elements.dpiInput.value = "900";
     elements.maxKbInput.value = "500";
-  } else {
+  } else if (preset === "standard") {
     elements.dpiInput.value = "300";
     elements.maxKbInput.value = "100";
   }
   updateOutputSize();
+}
+
+function setSizePreset(preset) {
+  const size = SIZE_PRESETS[preset];
+  if (size) {
+    elements.widthCmInput.value = String(size.width);
+    elements.heightCmInput.value = String(size.height);
+  }
+  updateOutputSize();
+}
+
+function markCustomSize() {
+  elements.sizePresetSelect.value = "custom";
+  updateOutputSize();
+}
+
+function markCustomQuality() {
+  elements.qualityPresetSelect.value = "custom";
+  updateOutputSize();
+}
+
+function validateOutputSettings() {
+  const size = outputDimensions();
+  if (!Number.isFinite(size.widthCm) || !Number.isFinite(size.heightCm) || size.widthCm <= 0 || size.heightCm <= 0) {
+    throw new Error("写真サイズの幅と高さを確認してください。");
+  }
+  if (!Number.isFinite(size.dpi) || size.dpi <= 0) {
+    throw new Error("DPIを確認してください。");
+  }
+  const maxKb = Number(elements.maxKbInput.value);
+  if (!Number.isFinite(maxKb) || maxKb <= 0) {
+    throw new Error("最大容量KBを確認してください。");
+  }
+  return size;
+}
+
+function outputZipName(size) {
+  const width = String(size.widthCm).replace(".", "_");
+  const height = String(size.heightCm).replace(".", "_");
+  return `student_photos_${width}x${height}cm_${size.dpi}dpi.zip`;
+}
+
+function initializeDefaults() {
+  setSizePreset("3x4");
+  if (elements.qualityPresetSelect.value === "high") {
+    setQualityPreset("high");
+  } else {
+    setQualityPreset("standard");
+  }
 }
 
 function resetAdvancedSettings() {
@@ -292,7 +356,13 @@ async function processImages() {
     return;
   }
 
-  const size = outputDimensions();
+  let size;
+  try {
+    size = validateOutputSettings();
+  } catch (error) {
+    log(error.message);
+    return;
+  }
   const maxBytes = Number(elements.maxKbInput.value) * 1024;
   const zip = new JSZip();
   const outputFolder = zip.folder("output_ok");
@@ -304,7 +374,9 @@ async function processImages() {
   elements.processButton.disabled = true;
   elements.okCount.textContent = "0";
   elements.reviewCount.textContent = "0";
-  log(`処理開始: ${files.length}枚 / ${size.width} x ${size.height}px / ${size.dpi}dpi`);
+  log(
+    `処理開始: ${files.length}枚 / ${size.widthCm} x ${size.heightCm}cm / ${size.width} x ${size.height}px / ${size.dpi}dpi`,
+  );
 
   for (const [index, file] of files.entries()) {
     const sourceName = file.webkitRelativePath || file.name;
@@ -365,7 +437,7 @@ async function processImages() {
   const blob = await zip.generateAsync({ type: "blob" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = `student_photos_${size.dpi}dpi.zip`;
+  link.download = outputZipName(size);
   link.click();
   URL.revokeObjectURL(link.href);
   log(`完了: 成功=${ok}, 要確認=${review}`);
@@ -401,12 +473,16 @@ async function loadModel() {
 
 elements.loadModelButton.addEventListener("click", loadModel);
 elements.imageInput.addEventListener("change", updateImageCount);
-elements.presetSelect.addEventListener("change", () => setPreset(elements.presetSelect.value));
-elements.dpiInput.addEventListener("input", updateOutputSize);
+elements.sizePresetSelect.addEventListener("change", () => setSizePreset(elements.sizePresetSelect.value));
+elements.widthCmInput.addEventListener("input", markCustomSize);
+elements.heightCmInput.addEventListener("input", markCustomSize);
+elements.qualityPresetSelect.addEventListener("change", () => setQualityPreset(elements.qualityPresetSelect.value));
+elements.dpiInput.addEventListener("input", markCustomQuality);
+elements.maxKbInput.addEventListener("input", markCustomQuality);
 elements.resetAdvancedButton.addEventListener("click", resetAdvancedSettings);
 elements.processButton.addEventListener("click", processImages);
 elements.clearButton.addEventListener("click", () => {
   elements.log.textContent = "";
 });
 
-updateOutputSize();
+initializeDefaults();
