@@ -15,6 +15,12 @@
 Pythonを入れていないWindows端末では、`web/` の静的ページを使えます。
 ChromeまたはEdgeで動作します。
 
+公開ページ:
+
+```text
+https://yuk1-kondo.github.io/student-photo-cropper/web/index.html
+```
+
 ```bash
 web/index.html
 ```
@@ -174,3 +180,17 @@ python3 scripts/rename_by_csv.py --input-dir /path/to/photos --csv names.csv --c
 ```
 
 出力フォルダには `rename_mapping.csv` も作成されます。
+
+## リポジトリ構成
+
+```text
+crop_student_photos.py       Python版の一括トリミングツール
+requirements.txt             Python版の依存関係
+scripts/rename_by_csv.py     CSV順リネーム用スクリプト
+web/index.html               ブラウザ版UI
+web/app.js                   ブラウザ版の顔検出・トリミング・ZIP出力処理
+web/styles.css               ブラウザ版の画面デザイン
+README.md                    使い方と注意事項
+```
+
+写真、CSV、処理済み画像、ZIP、モデルファイル、仮想環境は公開対象外です。
