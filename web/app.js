@@ -366,7 +366,7 @@ async function processImages() {
   const maxBytes = Number(elements.maxKbInput.value) * 1024;
   const zip = new JSZip();
   const outputFolder = zip.folder("output_ok");
-  const reviewFolder = zip.folder("output_review");
+  let reviewFolder = null;
   const mapping = [["source_file", "output_file", "status", "reason", "bytes", "quality"]];
   let ok = 0;
   let review = 0;
@@ -392,6 +392,7 @@ async function processImages() {
 
       if (usable.length !== 1) {
         review += 1;
+        reviewFolder ||= zip.folder("output_review");
         reviewFolder.file(file.name, file);
         mapping.push([sourceName, outputName, "review", usable.length === 0 ? "no_face" : "multiple_faces", "", ""]);
         log(`[${index + 1}/${files.length}] REVIEW ${sourceName}: ${usable.length === 0 ? "no_face" : "multiple_faces"}`);
@@ -402,6 +403,7 @@ async function processImages() {
       const cropBox = makeCropBox(face, bitmap.width, bitmap.height, size.width, size.height);
       if (!cropBox.inside) {
         review += 1;
+        reviewFolder ||= zip.folder("output_review");
         reviewFolder.file(file.name, file);
         mapping.push([sourceName, outputName, "review", "crop_out_of_bounds", "", ""]);
         log(`[${index + 1}/${files.length}] REVIEW ${sourceName}: crop_out_of_bounds`);
@@ -412,6 +414,7 @@ async function processImages() {
       const jpeg = await jpegUnderLimit(canvas, maxBytes, size.dpi);
       if (jpeg.data.byteLength > maxBytes) {
         review += 1;
+        reviewFolder ||= zip.folder("output_review");
         reviewFolder.file(outputName, jpeg.data);
         mapping.push([sourceName, outputName, "review", "size_limit_exceeded", jpeg.data.byteLength, jpeg.quality.toFixed(3)]);
         log(`[${index + 1}/${files.length}] REVIEW ${sourceName}: size_limit_exceeded`);
@@ -424,6 +427,7 @@ async function processImages() {
       log(`[${index + 1}/${files.length}] OK ${sourceName} -> ${outputName} (${jpeg.data.byteLength} bytes)`);
     } catch (error) {
       review += 1;
+      reviewFolder ||= zip.folder("output_review");
       reviewFolder.file(file.name, file);
       mapping.push([sourceName, outputName, "review", error.message, "", ""]);
       log(`[${index + 1}/${files.length}] ERROR ${sourceName}: ${error.message}`);
