@@ -60,31 +60,32 @@
           </label>
         </div>
         <p class="note">
-          通常はプリセットだけ選べば十分です。顔まわりの構図はPython版と同じ初期値で自動調整します。
+          通常はプリセットだけ選べば十分です。顔まわりの構図は、Python版の出力に近づくようWeb版用に補正した推奨値で自動調整します。
         </p>
 
         <details class="advanced-settings">
           <summary>詳細設定</summary>
           <div class="advanced-copy">
             <p>
-              基準値はPython版と同じです。迷った場合は変更せず、プレビューや出力結果を見て必要な時だけ調整してください。
+              Web版はMediaPipe、Python版はOpenCV YuNetを使うため、同じ数値では見え方が揃いません。
+              ここではPython版に近い見え方になる推奨値を初期値にしています。
             </p>
           </div>
           <div class="control-grid">
             <label>
               顔の大きさ
-              <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.42" />
+              <input id="faceRatioInput" type="number" min="0.25" max="0.6" step="0.01" value="0.38" />
               <span class="help-text">
-                既定値 0.42。数値を上げると顔が大きくなり、肩や胸元は少なめになります。
-                下げると顔が小さくなり、肩や上半身が多めに入ります。目安は 0.38〜0.46。
+                推奨値 0.38。数値を上げると顔が大きくなり、肩や胸元は少なめになります。
+                下げると顔が小さくなり、肩や上半身が多めに入ります。証明写真では 0.36〜0.42 が目安です。
               </span>
             </label>
             <label>
               頭上余白
-              <input id="headroomInput" type="number" min="0.2" max="1.0" step="0.01" value="0.55" />
+              <input id="headroomInput" type="number" min="0.2" max="1.2" step="0.01" value="0.85" />
               <span class="help-text">
-                既定値 0.55。数値を上げると頭上の余白が増え、顔は少し下に寄ります。
-                下げると頭上余白が減ります。髪が切れそうな時は 0.60〜0.65。
+                推奨値 0.85。数値を上げると頭上の余白が増え、顔は少し下に寄ります。
+                下げると頭上余白が減ります。まだ上が詰まる時は 0.90〜1.00、空きすぎる時は 0.75〜0.80。
               </span>
             </label>
             <label>
@@ -96,7 +97,7 @@
               </span>
             </label>
           </div>
-          <button id="resetAdvancedButton" class="secondary-button" type="button">Python版の初期値に戻す</button>
+          <button id="resetAdvancedButton" class="secondary-button" type="button">Web版の推奨値に戻す</button>
         </details>
       </section>
 

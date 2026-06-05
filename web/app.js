@@ -7,9 +7,9 @@ const MODEL_URL =
   "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
-const PYTHON_DEFAULTS = {
-  faceRatio: 0.42,
-  headroom: 0.55,
+const WEB_RECOMMENDED_DEFAULTS = {
+  faceRatio: 0.38,
+  headroom: 0.85,
   confidence: 0.85,
 };
 
@@ -71,10 +71,10 @@ function setPreset(preset) {
 }
 
 function resetAdvancedSettings() {
-  elements.faceRatioInput.value = String(PYTHON_DEFAULTS.faceRatio);
-  elements.headroomInput.value = String(PYTHON_DEFAULTS.headroom);
-  elements.confidenceInput.value = String(PYTHON_DEFAULTS.confidence);
-  log("詳細設定をPython版の初期値に戻しました。");
+  elements.faceRatioInput.value = String(WEB_RECOMMENDED_DEFAULTS.faceRatio);
+  elements.headroomInput.value = String(WEB_RECOMMENDED_DEFAULTS.headroom);
+  elements.confidenceInput.value = String(WEB_RECOMMENDED_DEFAULTS.confidence);
+  log("詳細設定をWeb版の推奨値に戻しました。");
 }
 
 function getImageFiles() {
