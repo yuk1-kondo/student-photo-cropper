@@ -1,4 +1,4 @@
-# Student Photo Cropper
+# Local Photo Cropper
 
 生徒の顔写真を、ローカルPC上で 3cm x 4cm のJPEGへ一括トリミングします。
 
@@ -18,7 +18,7 @@ ChromeまたはEdgeで動作します。
 公開ページ:
 
 ```text
-https://yuk1-kondo.github.io/student-photo-cropper/web/index.html
+https://yuk1-kondo.github.io/local-photo-cropper/web/index.html
 ```
 
 ```bash
