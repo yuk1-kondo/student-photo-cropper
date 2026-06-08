@@ -137,6 +137,51 @@
         <h2>処理ログ</h2>
         <pre id="log" class="log"></pre>
       </section>
+      <hr class="section-divider" />
+
+      <section class="hero">
+        <div>
+          <h1>PDF CSVリネーム</h1>
+          <p>
+            PDFファイルをファイル名順にソートし、CSVのA列の名前にリネームしてZIPでダウンロードします。
+            すべてブラウザ内で処理され、サーバーには送信されません。
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>入力</h2>
+        <div class="control-grid">
+          <label>
+            PDFファイル（複数可）
+            <input id="pdfInput" type="file" accept=".pdf,application/pdf" multiple />
+          </label>
+          <label>
+            リネームCSV
+            <input id="pdfCsvInput" type="file" accept=".csv,text/csv" />
+          </label>
+        </div>
+        <p class="note">
+          CSVのA1セルから保存したい名前を入れてください。PDFのファイル名順にリネームされます。
+        </p>
+      </section>
+
+      <section class="action-row">
+        <button id="pdfProcessButton" type="button" disabled>リネームしてZIP保存</button>
+        <button id="pdfClearButton" type="button">ログを消す</button>
+      </section>
+
+      <section class="summary-grid">
+        <div><strong id="pdfFileCount">0</strong><span>PDF</span></div>
+        <div><strong id="pdfRenameCount">0</strong><span>リネーム</span></div>
+        <div><strong id="pdfErrorCount">0</strong><span>エラー</span></div>
+        <div><strong id="pdfCsvStatus">未選択</strong><span>CSV</span></div>
+      </section>
+
+      <section class="panel">
+        <h2>処理ログ</h2>
+        <pre id="pdfLog" class="log"></pre>
+      </section>
     </main>
     <footer class="site-footer">© 2026 ローカル写真一括編集 - Developed by YUKI KONDO</footer>
 

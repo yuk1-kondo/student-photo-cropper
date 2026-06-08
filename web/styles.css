@@ -267,6 +267,12 @@ button:disabled {
   text-align: center;
 }
 
+.section-divider {
+  border: none;
+  border-top: 2px solid var(--border);
+  margin: 48px 0 0;
+}
+
 @media (max-width: 760px) {
   .hero,
   .control-grid,

@@ -490,3 +490,119 @@ elements.clearButton.addEventListener("click", () => {
 });
 
 initializeDefaults();
+
+// ===== PDF CSV Rename =====
+const pdfElements = {
+  pdfInput: document.querySelector("#pdfInput"),
+  pdfCsvInput: document.querySelector("#pdfCsvInput"),
+  pdfProcessButton: document.querySelector("#pdfProcessButton"),
+  pdfClearButton: document.querySelector("#pdfClearButton"),
+  pdfFileCount: document.querySelector("#pdfFileCount"),
+  pdfRenameCount: document.querySelector("#pdfRenameCount"),
+  pdfErrorCount: document.querySelector("#pdfErrorCount"),
+  pdfCsvStatus: document.querySelector("#pdfCsvStatus"),
+  pdfLog: document.querySelector("#pdfLog"),
+};
+
+function pdfLog(message) {
+  pdfElements.pdfLog.textContent += `${message}\n`;
+  pdfElements.pdfLog.scrollTop = pdfElements.pdfLog.scrollHeight;
+}
+
+function getPdfFiles() {
+  return Array.from(pdfElements.pdfInput.files || [])
+    .filter((file) => file.name.toLowerCase().endsWith(".pdf"))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
+}
+
+function updatePdfFileCount() {
+  const count = getPdfFiles().length;
+  pdfElements.pdfFileCount.textContent = String(count);
+  pdfElements.pdfProcessButton.disabled = count === 0;
+}
+
+async function readPdfCsvNames() {
+  const file = pdfElements.pdfCsvInput.files?.[0];
+  if (!file) return null;
+  const text = await file.text();
+  return text
+    .replace(/^﻿/, "")
+    .split(/\r?\n/)
+    .map((line) => line.split(",")[0]?.trim())
+    .filter(Boolean)
+    .map(sanitizeFilename);
+}
+
+function updatePdfCsvStatus() {
+  const file = pdfElements.pdfCsvInput.files?.[0];
+  if (file) {
+    pdfElements.pdfCsvStatus.textContent = file.name;
+  } else {
+    pdfElements.pdfCsvStatus.textContent = "未選択";
+  }
+}
+
+async function processPdfRename() {
+  const files = getPdfFiles();
+  if (!files.length) {
+    pdfLog("PDFファイルが選択されていません。");
+    return;
+  }
+
+  const csvNames = await readPdfCsvNames();
+  if (!csvNames) {
+    pdfLog("CSVファイルが選択されていません。");
+    return;
+  }
+  if (csvNames.length < files.length) {
+    pdfLog(`CSV行数が足りません: CSV=${csvNames.length}, PDF=${files.length}`);
+    return;
+  }
+
+  const zip = new JSZip();
+  let renamed = 0;
+  let errors = 0;
+
+  pdfElements.pdfProcessButton.disabled = true;
+  pdfElements.pdfRenameCount.textContent = "0";
+  pdfElements.pdfErrorCount.textContent = "0";
+  pdfLog(`処理開始: ${files.length}件のPDF`);
+
+  for (const [index, file] of files.entries()) {
+    const newName = csvNames[index];
+    const outputName = `${newName}.pdf`;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      zip.file(outputName, arrayBuffer);
+      renamed += 1;
+      pdfLog(`[${index + 1}/${files.length}] ${file.name} → ${outputName}`);
+    } catch (error) {
+      errors += 1;
+      pdfLog(`[${index + 1}/${files.length}] ERROR ${file.name}: ${error.message}`);
+    }
+
+    pdfElements.pdfRenameCount.textContent = String(renamed);
+    pdfElements.pdfErrorCount.textContent = String(errors);
+  }
+
+  const blob = await zip.generateAsync({ type: "blob" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "renamed_pdfs.zip";
+  link.click();
+  URL.revokeObjectURL(link.href);
+
+  pdfLog(`完了: リネーム=${renamed}, エラー=${errors}`);
+  pdfElements.pdfProcessButton.disabled = false;
+}
+
+pdfElements.pdfInput.addEventListener("change", updatePdfFileCount);
+pdfElements.pdfCsvInput.addEventListener("change", () => {
+  updatePdfCsvStatus();
+  updatePdfFileCount();
+});
+pdfElements.pdfProcessButton.addEventListener("click", processPdfRename);
+pdfElements.pdfClearButton.addEventListener("click", () => {
+  pdfElements.pdfLog.textContent = "";
+});
